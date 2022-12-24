@@ -1,0 +1,24 @@
+version:  "3"
+
+services:
+  mssql_param:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    cap_add: [ 'SYS_PTRACE' ]
+    environment:
+      - "ACCEPT_EULA=1"
+      - "MSSQL_SA_PASSWORD=SU2orange!"
+    ports:
+      - "14330:1433"
+    hostname: mssql_param
+    volumes:
+      - "mssql-azuresql-edge-data_param:/var/opt/mssql"
+  parametros:
+    image: camilocalderont/parametros_back:1.1
+    environment:
+      - "CONNECTION_STRING=Data Source=mssql_param,1433;Initial Catalog=PARAMETROS;User Id=sa;Password=SU2orange!;"   
+    ports:
+      - "8081:80"    
+    depends_on:
+      - mssql_param
+volumes:
+    mssql-azuresql-edge-data_param:
