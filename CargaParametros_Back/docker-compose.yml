@@ -1,7 +1,7 @@
 version:  "3"
 
 services:
-  mssql_param:
+  mssql_admin:
     image: mcr.microsoft.com/azure-sql-edge:latest
     cap_add: [ 'SYS_PTRACE' ]
     environment:
@@ -9,16 +9,19 @@ services:
       - "MSSQL_SA_PASSWORD=SU2orange!"
     ports:
       - "14330:1433"
-    hostname: mssql_param
+    hostname: mssql_admin
     volumes:
       - "mssql-azuresql-edge-data_param:/var/opt/mssql"
-  parametros:
-    image: camilocalderont/parametros_back:1.1
+  
+  sc_parametrodetalle_back:
+    image: cargaexcel
     environment:
-      - "CONNECTION_STRING=Data Source=mssql_param,1433;Initial Catalog=PARAMETROS;User Id=sa;Password=SU2orange!;"   
+      - "CONNECTION_STRING=Data Source=mssql_admin,1433;Initial Catalog=ADMINISTRADOR;User Id=sa;Password=SU2orange!;"     
+
     ports:
-      - "8081:80"    
+      - "8082:80"    
     depends_on:
-      - mssql_param
+      - mssql_admin
+    
 volumes:
     mssql-azuresql-edge-data_param:

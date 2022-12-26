@@ -4,7 +4,7 @@ using Persistencia.Context;
 using Persistencia.Repository;
 using WebAPI.Midleware;
 using Aplicacion.AgregarExcel;
-using DotNetEnv;
+
 
 var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -16,6 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
+
 DotNetEnv.Env.Load();
 
 var logger = LoggerFactory.Create(config =>
@@ -23,15 +25,16 @@ var logger = LoggerFactory.Create(config =>
     config.AddConsole();
 }).CreateLogger("Program");
 
+var conectonstringn = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+
+
 logger.LogInformation("CADENA DE CONEXION: " + Environment.GetEnvironmentVariable("CONNECTION_STRING"));
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                       options.UseSqlServer(Environment.GetEnvironmentVariable("CONNECTION_STRING")),
+                       options.UseSqlServer(conectonstringn),
             ServiceLifetime.Transient);
-
-
-
 
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -60,10 +63,7 @@ builder.Services.AddCors(opt => {
 
 
 
-
 var app = builder.Build();
-
-
 
 
 

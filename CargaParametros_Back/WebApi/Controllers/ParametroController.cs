@@ -228,56 +228,49 @@ namespace WebApi.Controllers
                 else
                 {
                    
-                    DateTime now = DateTime.Now;
-                    var horaNombre = now.ToString("yyyy-MM-dd-HH-mm-ss");
-                    var rutaArchivo = rutaInicial + "/Upload/" + horaNombre + nombreArchivo;
-
-                    if (files.Count == 1)
+                    using (var ms = new MemoryStream())
                     {
-                        if (System.IO.File.Exists(rutaArchivo))
+
+                        files[0].CopyTo(ms);
+                        //var fileBytes = ms.ToArray();
+                        //string s = Convert.ToBase64String(fileBytes);
+                        // act on the Base64 data
+
+                        var responseParametro = _agregarExcel.procesarArchivo(ms);
+
+
+                        if (responseParametro.Errores.Count > 0)
                         {
-                            System.IO.File.Delete(rutaArchivo);
+                            response = new CargaParametroResponse(
+                                HttpStatusCode.BadRequest,
+                                "Datos Vacios en Documento Excel",
+                                "Falta un valor en alguna celda del archivo excel",
+                                responseParametro.Errores,
+                                registros
+                            );
                         }
-                    }
-
-                    using (var str = System.IO.File.Create(rutaArchivo))
-                    {
-                        str.Position = 0;
-                        await files[0].CopyToAsync(str);
-                    }
-
-                    var responseParametro = _agregarExcel.procesarArchivo(rutaArchivo);
-                  
-
-                    if (responseParametro.Errores.Count > 0)
-                    {
-                        response = new CargaParametroResponse(
-                            HttpStatusCode.BadRequest,
-                            "Datos Vacios en Documento Excel",
-                            "Falta un valor en alguna celda del archivo excel",
-                            responseParametro.Errores,
-                            registros
-                        );
-                    }
-                    else if (responseParametro.Registros == 0)
-                    {
-                        response = new CargaParametroResponse(
-                            statusOk,
-                            "Archivo sin procesar",
-                            "No se procesó el archivo debido a que ya existían los parámetros en base de datos",
-                            errores,
-                            registros
-                        );
-                    }
-                    else
-                    {
+                        else if (responseParametro.Registros == 0)
+                        {
+                            response = new CargaParametroResponse(
+                                statusOk,
+                                "Archivo sin procesar",
+                                "No se procesó el archivo debido a que ya existían los parámetros en base de datos",
+                                errores,
+                                registros
+                            );
+                        }
+                        else
+                        {
                             response = new CargaParametroResponse(
                             statusOk,
                             "Parametros cargados", "Se cargaron (" + responseParametro.Registros + ") parametros y ParametrosDetalle, archivo: " + nombreArchivo,
                             responseParametro.Errores,
                             responseParametro.Registros
                         );
+                        }
+
                     }
+                 
                 }
             }
             catch (Exception ex)

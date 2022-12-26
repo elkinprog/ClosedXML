@@ -10,9 +10,9 @@ namespace Aplicacion.AgregarExcel
 {
     public interface IAgregarExcel
     {
-        ParametroRequest parametro(string ruta);
-        ParametroRequest parametrodetalle(string ruta, DataTable parametros, ref List<string> errores);
-        ParametroRequest  procesarArchivo(string ruta);
+        ParametroRequest parametro(Stream ruta);
+        ParametroRequest parametrodetalle(Stream ruta, DataTable parametros, ref List<string> errores);
+        ParametroRequest  procesarArchivo(Stream ruta);
     }
 
     public class AgregarExcel   : IAgregarExcel 
@@ -24,7 +24,7 @@ namespace Aplicacion.AgregarExcel
             this._parametroRepository = parametroRepository;
         }
 
-        public ParametroRequest procesarArchivo(string ruta)
+        public ParametroRequest procesarArchivo(Stream ruta)
         {
             var response = parametro(ruta);
             var list = response.Parametros;
@@ -46,7 +46,7 @@ namespace Aplicacion.AgregarExcel
         }
 
 
-        public ParametroRequest parametro(string ruta) // NUEVO fUNCIONAL
+        public ParametroRequest parametro(Stream ruta) // NUEVO fUNCIONAL
         {
 
 
@@ -77,10 +77,16 @@ namespace Aplicacion.AgregarExcel
                     foreach (var row in worksheet.RowsUsed().Skip(1))
                     {
 
-                        long Id = Convert.ToInt64(worksheet.Cell(fila, 1).Value);
-                        string VcNombre = Convert.ToString(worksheet.Cell(fila, 2).Value);
-                        string VcCodigoInterno = Convert.ToString(worksheet.Cell(fila, 3).Value);
-                        string BEstado = Convert.ToString(worksheet.Cell(fila, 4).Value);
+                        //long Id = Convert.ToInt64(worksheet.Cell(fila, 1).Value);
+
+                        long Id;
+                        string? ide = Convert.ToString(worksheet.Cell(fila, 1).Value);
+                        long.TryParse(ide, out Id);
+
+
+                        string? VcNombre = Convert.ToString(worksheet.Cell(fila, 2).Value);
+                        string? VcCodigoInterno = Convert.ToString(worksheet.Cell(fila, 3).Value);
+                        string? BEstado = Convert.ToString(worksheet.Cell(fila, 4).Value);
 
 
                         if (Id <= 0)
@@ -160,14 +166,12 @@ namespace Aplicacion.AgregarExcel
         }
 
 
-
-        public ParametroRequest parametrodetalle(string ruta, DataTable parametros, ref List<string> errores)  // NUEVO
+        public ParametroRequest parametrodetalle(Stream ruta, DataTable parametros, ref List<string> errores)  // NUEVO
         {
 
 
             using (XLWorkbook workBook = new XLWorkbook(ruta))
             {
-
 
                 var worksheett = workBook.Worksheet(2);
 
@@ -193,30 +197,30 @@ namespace Aplicacion.AgregarExcel
                     {
 
                         long Id;
-                        string ide = Convert.ToString(worksheett.Cell(fila, 1).Value);
+                        string? ide = Convert.ToString(worksheett.Cell(fila, 1).Value);
                         long.TryParse(ide, out Id);
 
 
                         long ParametroId;
-                        string paramId = Convert.ToString(worksheett.Cell(fila, 2).Value);
+                        string? paramId = Convert.ToString(worksheett.Cell(fila, 2).Value);
                         long.TryParse(paramId, out ParametroId);
 
 
-                        string  VcNombre        = Convert.ToString(worksheett.Cell(fila, 3).Value);
-                        string  TxDescripcion   = Convert.ToString(worksheett.Cell(fila, 4).Value);
-                        string  IdPadre         = Convert.ToString(worksheett.Cell(fila, 5).Value);
-                        string  VcCodigoInterno = Convert.ToString(worksheett.Cell(fila, 6).Value);
-                        string  DCodigoIterno   = Convert.ToString(worksheett.Cell(fila, 7).Value);
-                        string  BEstado         = Convert.ToString(worksheett.Cell(fila, 8).Value);
+                        string?  VcNombre        = Convert.ToString(worksheett.Cell(fila, 3).Value);
+                        string?  TxDescripcion   = Convert.ToString(worksheett.Cell(fila, 4).Value);
+                        string?  IdPadre         = Convert.ToString(worksheett.Cell(fila, 5).Value);
+                        string?  VcCodigoInterno = Convert.ToString(worksheett.Cell(fila, 6).Value);
+                        string?  DCodigoIterno   = Convert.ToString(worksheett.Cell(fila, 7).Value);
+                        string?  BEstado         = Convert.ToString(worksheett.Cell(fila, 8).Value);
 
 
 
-                        string Desde = Convert.ToString(worksheett.Cell(fila, 9).Value);
+                        string? Desde = Convert.ToString(worksheett.Cell(fila, 9).Value);
                         int RangoDesde;
                         int.TryParse(Desde, out RangoDesde);
 
 
-                        string Hasta = Convert.ToString(worksheett.Cell(fila, 10).Value);
+                        string? Hasta = Convert.ToString(worksheett.Cell(fila, 10).Value);
                         int RangoHasta;
                         int.TryParse(Hasta, out RangoHasta);
 
