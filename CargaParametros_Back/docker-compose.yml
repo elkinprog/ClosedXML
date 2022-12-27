@@ -1,5 +1,4 @@
 version:  "3"
-
 services:
   mssql_admin:
     image: mcr.microsoft.com/azure-sql-edge:latest
@@ -12,16 +11,13 @@ services:
     hostname: mssql_admin
     volumes:
       - "mssql-azuresql-edge-data_param:/var/opt/mssql"
-  
   sc_parametrodetalle_back:
     image: cargaexcel
     environment:
       - "CONNECTION_STRING=Data Source=mssql_admin,1433;Initial Catalog=ADMINISTRADOR;User Id=sa;Password=SU2orange!;"     
-
     ports:
       - "8082:80"    
     depends_on:
       - mssql_admin
-    
 volumes:
     mssql-azuresql-edge-data_param:
